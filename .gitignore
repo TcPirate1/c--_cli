@@ -35,4 +35,8 @@
 *.out
 *.app
 
+# Compiled files
+ffdb_clang
+ffdb_g++
+
 # End of https://www.toptal.com/developers/gitignore/api/c++
