@@ -7,13 +7,15 @@
 #include <vector>
 #include <filesystem>
 
-void validChar(char enteredChar []) {
-  int length = strlen(enteredChar);
+void validChar(char enteredChar) {
+  // std::cin::get() obtains first char entered into input.
+  // Check against this char.
+  std::string validInput;
+  validInput = "yn";
   while (true) {
-    // if () {
-    //   std::cout << enteredChar;
-    //   break;
-    // }
+    for (int i = 0; i <= validInput.length(); i++) {
+      validInput[i] == enteredChar ? std::cout << "Same" :  std::cout << "Different";
+    }
   }
 }
 
@@ -36,9 +38,17 @@ void helpStdOut() {
                   << "--delete or -d         Delete from collection\n";
 }
 
-void dirChecker(std::string fPath) {
+void dirChecker(std::string& fPath) {
   if (!std::filesystem::exists(fPath) && !std::filesystem::is_directory(fPath)) {
           std::filesystem::create_directory(fPath);
+          std::cout << "\nCreating directory...";
+        }
+        std::cout << "\nDirectory exists";
+}
+
+void vectorListing(std::vector<std::string>& collections) {
+  for (int i = 0; i <= 0; i++) {
+          std::cout << "\nCollection:"+collections[i];
         }
 }
 
@@ -48,11 +58,13 @@ int main(int argc, char *argv[]) {
   int option;
   
   std::vector<std::string> collections;
-  // Possible can just use std::cin::fail() -> returns bool, to check whether it's a char, therefore don't need
-  // to check length, just need to check input contains valid chars.
 
   if (argc == 1) {
-    std::cout << collections.size();
+    if (collections.empty()) {
+      std::cout << "\nCollection is empty...\nWould you like to create one now? [Y]es, [N]o\n"
+                << "Only placeholder for now, does not work...";
+    }
+    // Add output listing all the vectors. Find ~/Documents/FF/ and add all files inside that end with .csv
     helpStdOut();
 } else {
     while ((option = getopt_long(argc, argv, "hvcaud", long_options, nullptr)) != -1) {
@@ -76,14 +88,15 @@ int main(int argc, char *argv[]) {
         std::string collectionName;
         std::cout << "What would you like to name your collection?\n";
         std::getline(std::cin, collectionName);
-        std::cout << "Making " << collectionName << "...";
+        std::cout << "Making " << collectionName << ".csv";
         std::string fPath = homedir + "/Documents/FF/";
         dirChecker(fPath);
-        std::string finalPath = fPath + collectionName + ".txt";
+        std::string finalPath = fPath + collectionName + ".csv";
         std::ofstream outfile(finalPath);
         std::cout << "Finished making " << finalPath;
-        collections.push_back(collectionName);
+        collections.push_back(collectionName + ".csv");
         outfile.close();
+        vectorListing(collections);
       }
         return 0;
 
@@ -96,6 +109,8 @@ int main(int argc, char *argv[]) {
       case 'd':
         std::cout
             << "Are you sure you want to delete this collection? [Y]es, [N]o\n";
+            char input = std::cin.get();
+            validChar(input);
         break;
       }
     };
