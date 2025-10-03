@@ -20,7 +20,7 @@ input=$(isValidCharacter "[c]lang++ or [g]cc?
 " "cg")
 
 if [ "$input" == "c" ]; then
-clang++ -o2 ffdb.cpp -o ffdb_clang # Some reason HAS permissions
+clang++ -o0 ffdb.cpp -o ffdb_clang # Some reason HAS permissions
 printf "Your C++ code has been compiled"
 elif [ "$input" == "g" ]; then
 g++ -S ffdb.cpp -o ffdb_g++ # Some reason doesn't have permissions

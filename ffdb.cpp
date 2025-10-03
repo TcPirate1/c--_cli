@@ -1,3 +1,4 @@
+#include <cctype>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -6,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <unistd.h>
 
 void validChar(char enteredChar) {
   // std::cin::get() obtains first char entered into input.
@@ -43,7 +45,20 @@ void dirChecker(std::string& fPath) {
           std::filesystem::create_directory(fPath);
           std::cout << "\nCreating directory...";
         }
-        std::cout << "\nDirectory exists";
+        std::cout << "\nDirectory exists\n";
+}
+
+bool fileChecker( std::string& file ) {
+  char input;
+  if (access(file.c_str(), F_OK) != -1) {
+    std::cout << "\nFile exists\nDo you want to overwrite " << file << "? [Y]es [N]o\n";
+    input = std::cin.get();
+    std::tolower(input, std::locale());
+  }
+  if (input == 'y') {
+    return 1;
+  }
+  return 0;
 }
 
 void vectorListing(std::vector<std::string>& collections) {
@@ -52,6 +67,8 @@ void vectorListing(std::vector<std::string>& collections) {
         }
 }
 
+// Add output listing all the vectors. Find ~/Documents/FF/ and add all files inside that end with .csv
+
 int main(int argc, char *argv[]) {
   std::cout << "FF cli tracker\n";
 
@@ -59,24 +76,16 @@ int main(int argc, char *argv[]) {
   
   std::vector<std::string> collections;
 
-  if (argc == 1) {
-    if (collections.empty()) {
-      std::cout << "\nCollection is empty...\nWould you like to create one now? [Y]es, [N]o\n"
-                << "Only placeholder for now, does not work...";
-    }
-    // Add output listing all the vectors. Find ~/Documents/FF/ and add all files inside that end with .csv
-    helpStdOut();
-} else {
     while ((option = getopt_long(argc, argv, "hvcaud", long_options, nullptr)) != -1) {
       switch (option) {
 
       case 'h':
         helpStdOut();
-        return 0;
+        return 1;
 
       case 'v':
         std::cout << "Version: 0.0.1\n";
-        return 0;
+        return 1;
       
       case 'c': {
         // getenv with "HOME" as the parameter will expand to "home/user/"
@@ -92,13 +101,18 @@ int main(int argc, char *argv[]) {
         std::string fPath = homedir + "/Documents/FF/";
         dirChecker(fPath);
         std::string finalPath = fPath + collectionName + ".csv";
-        std::ofstream outfile(finalPath);
-        std::cout << "Finished making " << finalPath;
+        if(fileChecker(finalPath)) {
+          std::ofstream outfile(finalPath);
+          std::cout << finalPath << "overwritten";
+        }
+        if (!fileChecker(finalPath)) {
+          std::ofstream outfile(finalPath);
+          std::cout << "finished making " << collectionName;
+        }
         collections.push_back(collectionName + ".csv");
-        outfile.close();
         vectorListing(collections);
       }
-        return 0;
+        return 1;
 
       case 'a':
         std::cout << "Enter the data you'd like to add to collection:\n";
@@ -109,11 +123,13 @@ int main(int argc, char *argv[]) {
       case 'd':
         std::cout
             << "Are you sure you want to delete this collection? [Y]es, [N]o\n";
-            char input = std::cin.get();
-            validChar(input);
+            // char input = std::cin.get();
+            // validChar(input);
+        break;
+      default:
+        helpStdOut();
         break;
       }
     };
-  }
-  return 0;
+  return 1;
 }
