@@ -73,20 +73,14 @@ bool fileChecker(std::string &file) {
 }
 
 void vectorListing(std::vector<std::string> &collections) {
-  for (int i = 0; i <= 0; i++) {
-    std::cout << "\nCollection:" + collections[i];
-  }
-}
-
-std::string findCollection(std::string defaultDir) {
-
-  for (const auto &entry : std::filesystem::directory_iterator(defaultDir)) {
-    if (entry.path().extension() == ".csv") {
-      std::cout << entry.path();
-      return entry.path();
+  if (collections.empty()) {
+    std::cout << "\nThere's nothing inside :(";
+  } else {
+    std::cout << "\nCollections:\n";
+    for (std::string i: collections) {
+      std::cout << i << "\n";
     }
   }
-  return "";
 }
 
 // Add output listing all the vectors. Find ~/Documents/FF/ and add all files
@@ -104,7 +98,12 @@ int main(int argc, char *argv[]) {
 
   std::vector<std::string> collections;
 
-  collections.push_back(findCollection(defaultDir));
+  for (const auto &entry : std::filesystem::directory_iterator(defaultDir)) {
+    if (entry.path().extension() == ".csv") {
+      std::cout << entry.path();
+      collections.push_back(entry.path());
+    }
+  }
 
   vectorListing(collections);
 
